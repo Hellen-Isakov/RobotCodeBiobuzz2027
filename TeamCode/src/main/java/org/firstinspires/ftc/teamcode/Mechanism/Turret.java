@@ -1,19 +1,17 @@
-package org.firstinspires.ftc.teamcode.TeleOp_Hellen;
+package org.firstinspires.ftc.teamcode.Mechanism;
 
 
 import com.pedropathing.ivy.Command;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-import org.firstinspires.ftc.teamcode.RobotMap;
+import org.firstinspires.ftc.teamcode.Robot.RobotMap;
 
 import dev.nextftc.control.feedback.PIDController;
 import dev.nextftc.hardware.actuators.NextMotor;
 import dev.nextftc.robot.Mechanism;
 import dev.nextftc.robot.Telemetry;
-import dev.nextftc.robot.opmode.NextOpMode;
 
 
-public class TurretMechanism implements Mechanism {
+public class Turret implements Mechanism {
 
     double offset = 0;
     NextMotor turretLL = new NextMotor("0C");
@@ -21,11 +19,10 @@ public class TurretMechanism implements Mechanism {
             0.01, 0.0, 0.001
     ));
 
-
     public void initialize() {
-        double output = pid.calculate(setpoint - turretLL.getEncoderPosition());
         turretLL.setZeroPowerBehavior(NextMotor.ZeroPowerBehavior.FLOAT);
     }
+
 
     public double getAngle() {
         return (turretLL.getPositionConstants() * RobotMap.TURRET_GEAR_RATIO) - offset;
@@ -34,7 +31,7 @@ public class TurretMechanism implements Mechanism {
     @Override
     public void periodic() {
 //        double PIDPower = pid.calculateOutput(getAngle(), ActiveOpMode.getRuntime());
-        double PIDPower = pid.calculate(getAngle(), )
+        double PIDPower = pid.calculate(getAngle());
 
 //        telemetryManager.debug(getAngle());
 //        telemetryManager.debug(PID.getTarget());
@@ -48,7 +45,7 @@ public class TurretMechanism implements Mechanism {
         Telemetry.log("Target LL: ", pid.getError());
         Telemetry.update();
     }
-    public double getTarget(){
+    public double getTarget() {
         return PID.getTarget();
     }
 
@@ -65,7 +62,7 @@ public class TurretMechanism implements Mechanism {
     }
 
     public Command FollowTarget() {
-        double tx = LLMechanism.getTx();
+        double tx = LimeLight.getTx();
         Telemetry.log("tx", tx);
         Telemetry.update();
         return infinite(()-> pid.setTarget(tx));

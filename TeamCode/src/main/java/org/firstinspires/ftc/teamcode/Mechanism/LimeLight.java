@@ -1,12 +1,11 @@
-package org.firstinspires.ftc.teamcode.TeleOp_Hellen;
+package org.firstinspires.ftc.teamcode.Mechanism;
 
-import static dev.nextftc.units.Units.Centimeters;
-import static dev.nextftc.units.Units.Inches;
 import static dev.nextftc.units.Units.Meters;
 
+import com.pedropathing.math.Pose;
+import com.pedropathing.math.Vector;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes.FiducialResult;
-import com.qualcomm.hardware.limelightvision.Limelight3A;
 
 import java.util.HashMap;
 import java.util.List;
@@ -18,7 +17,7 @@ import dev.nextftc.robot.Mechanism;
 import dev.nextftc.robot.Telemetry;
 import dev.nextftc.units.measuretypes.Distance;
 
-public class LLMechanism implements Mechanism {
+public class LimeLight implements Mechanism {
 
 //    public static final LLMechanism INSTANCE = new LLMechanism();
 
@@ -31,7 +30,7 @@ public class LLMechanism implements Mechanism {
 
     private final HashMap<Integer, String> obeliskMap = new HashMap<>();
 
-    public LLMechanism() {
+    public LimeLight() {
         obeliskMap.put(30, "RED SCORING");
         obeliskMap.put(31, "RED SCORING");
         obeliskMap.put(32, "RED SCORING");
@@ -122,6 +121,47 @@ public class LLMechanism implements Mechanism {
 
     public boolean hasTarget() {
         return hasTarget;
+    }
+
+
+    // TODO: it's from ri30h, check if needed
+    public Pose getFinalPose(double targetX, double targetY, Pose currentPose) {
+
+        if (currentPose == null) {
+            return null;
+        }
+
+        double cameraPitch = 10;
+        double ballHeight = 3;
+        double cameraHeight = 9.5;
+
+        double cameraOffsetY = 7.5;
+        double cameraOffsetX = 0;
+
+        double cameraToBallAngle = Math.toRadians(cameraPitch + targetY);
+
+        double heightDifference = cameraHeight - ballHeight;
+
+        // Checks for impossible math
+        if (Math.abs(Math.tan(cameraToBallAngle)) < 0.0001) {
+            return null;
+        }
+
+        double forwardDistance = heightDifference / Math.tan(cameraToBallAngle);
+        double lateralDistance = forwardDistance * Math.tan(Math.toRadians(targetX));
+
+        forwardDistance += cameraOffsetY;
+        lateralDistance += cameraOffsetX;
+
+        Vector robotToBallVector = new Vector(forwardDistance, lateralDistance);
+
+        robotToBallVector.toVector2D().rotate(currentPose.heading());
+
+        double fieldX = currentPose.x() + robotToBallVector.toVector2D().x();
+
+        double fieldY = currentPose.y() + robotToBallVector.toVector2D().y();
+
+        return new Pose(fieldX, fieldY, currentPose.heading());
     }
 
 }
