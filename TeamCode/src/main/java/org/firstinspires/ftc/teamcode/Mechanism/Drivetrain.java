@@ -11,9 +11,9 @@ public class Drivetrain implements Mechanism {
         backRight.setDirection(NextMotor.Direction.FORWARD);
         frontRight.setDirection(NextMotor.Direction.REVERSE);
     }
-    public final NextMotor backLeft = new NextMotor(RobotController.expansionHub(), 3);
-    public final NextMotor frontLeft = new NextMotor(RobotController.expansionHub(), 2);
-    public final NextMotor backRight =  new NextMotor(RobotController.expansionHub(), 1);
-    public final NextMotor frontRight = new NextMotor(RobotController.expansionHub(), 0);
+    public NextMotor backLeft = new NextMotor("3E");
+    public NextMotor frontLeft = new NextMotor("2E");
+    public NextMotor backRight =  new NextMotor("1E");
+    public NextMotor frontRight = new NextMotor("0E");
 
 }

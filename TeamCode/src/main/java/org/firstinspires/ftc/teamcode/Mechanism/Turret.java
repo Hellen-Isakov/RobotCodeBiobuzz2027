@@ -22,7 +22,7 @@ public class Turret implements Mechanism {
     double offset = 0;
     NextDigitalSensor magnet = new NextDigitalSensor("magnet");
 
-    NextMotor turretLL = new NextMotor("0C");
+    NextMotor turretLL = new NextMotor("1C");
     PIDController pid = new PIDController(new dev.nextftc.control.feedback.PIDCoefficients(
             0.01, 0.0, 0.001
     ));

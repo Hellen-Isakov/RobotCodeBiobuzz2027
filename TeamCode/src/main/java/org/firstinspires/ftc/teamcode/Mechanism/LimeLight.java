@@ -70,7 +70,7 @@ public class LimeLight implements Mechanism {
         tx = 0;
         ty = 0;
 
-        Distance distance = limelight.getDistance(Meters, 33); //Defaults to Inches
+        Distance distance = limelight.getDistance(Meters, 35); //Defaults to Inches
         if (distance != null) {
             hasTarget = true;
         }
