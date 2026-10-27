@@ -2,15 +2,19 @@ package org.firstinspires.ftc.teamcode.Mechanism;
 
 import static dev.nextftc.units.Units.Meters;
 
+import com.pedropathing.ivy.Command;
 import com.pedropathing.math.Pose;
 import com.pedropathing.math.Vector;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes.FiducialResult;
 
+import org.firstinspires.ftc.teamcode.Data.PidController;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
+import dev.nextftc.control.feedback.PIDController;
 import dev.nextftc.control.geometry.Pose2d;
 import dev.nextftc.hardware.webcams.NextLimelight;
 import dev.nextftc.robot.Mechanism;
@@ -19,16 +23,16 @@ import dev.nextftc.units.measuretypes.Distance;
 
 public class LimeLight implements Mechanism {
 
-//    public static final LLMechanism INSTANCE = new LLMechanism();
-
-    // Using your configuration name
     NextLimelight limelight = new NextLimelight("limelight");
-    private double tx = 0;
-    private double ty = 0;
+    public double tx = 0;
+    public double ty = 0;
 
     private boolean hasTarget = false;
 
     private final HashMap<Integer, String> obeliskMap = new HashMap<>();
+
+    public final PidController pidController = new PidController();
+
 
     public LimeLight() {
         obeliskMap.put(30, "RED SCORING");
@@ -50,7 +54,7 @@ public class LimeLight implements Mechanism {
     }
 
 //    @Override
-    public void initialize() {
+    public Command initialize() {
 //        limelight = ActiveOpMode.hardwareMap().get(
 //                Limelight3A.class,
 //                "limelight"
@@ -58,6 +62,7 @@ public class LimeLight implements Mechanism {
 
         limelight.startReading(0, 100);
         limelight.start();
+        return null;
     }
 
     @Override
@@ -94,8 +99,8 @@ public class LimeLight implements Mechanism {
 
         hasTarget = true;
 
-        // לוקח את ה-Fiducial הראשון
-        FiducialResult fiducial = fiducials.get(0);
+
+        FiducialResult fiducial = fiducials.get(0); // takes the first fiducial
 
         int id = fiducial.getFiducialId();
         tx = fiducial.getTargetXDegrees();
@@ -113,7 +118,9 @@ public class LimeLight implements Mechanism {
 
     }
 
-    public double getTx() { return tx; }
+    public double getTx() {
+        return tx;
+    }
 
     public double getTy() {
         return ty;
@@ -122,7 +129,6 @@ public class LimeLight implements Mechanism {
     public boolean hasTarget() {
         return hasTarget;
     }
-
 
     // TODO: it's from ri30h, check if needed
     public Pose getFinalPose(double targetX, double targetY, Pose currentPose) {

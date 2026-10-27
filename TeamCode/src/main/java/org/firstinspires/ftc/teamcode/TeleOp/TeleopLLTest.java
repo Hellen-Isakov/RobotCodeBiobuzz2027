@@ -1,35 +1,28 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
-import static com.pedropathing.ivy.commands.Commands.instant;
-import static dev.nextftc.units.Units.RotationsPerMinute;
+import static com.pedropathing.ivy.commands.Commands.infinite;
 
-import com.bylazar.configurables.annotations.Configurable;
 import com.pedropathing.ivy.Scheduler;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.robot.Robot;
 
-import dev.nextftc.core.commands.utility.InstantCommand;
-import dev.nextftc.core.components.BindingsComponent;
-import dev.nextftc.core.components.SubsystemComponent;
-import dev.nextftc.ftc.NextFTCOpMode;
-import dev.nextftc.ftc.components.BulkReadComponent;
-import dev.nextftc.robot.NextRobot;
+import org.firstinspires.ftc.teamcode.Data.StarRobot;
+import org.firstinspires.ftc.teamcode.Mechanism.Turret;
+
 import dev.nextftc.robot.opmode.BulkReadHook;
 import dev.nextftc.robot.opmode.NextOpMode;
+import dev.nextftc.robot.opmode.NextTeleop;
 import dev.nextftc.robot.triggers.CommandGamepad;
 import dev.nextftc.robot.triggers.Trigger;
 
-@TeleOp(name = "A TeleopLL")
+@NextTeleop(name = "A TeleopLL")
 public class TeleopLLTest extends NextOpMode {
-    public TeleopLLTest(Robot robot) { super((NextRobot) robot, BulkReadHook.INSTANCE); }
 
     public boolean hasMatchStarted = false;
 
-    public Robot robot;
+    public StarRobot starRobot;
 
-    public TeleopLLTest(Robot robot) {
-        super(robot);
-        this.robot = robot;
+    public TeleopLLTest(StarRobot starRobot) {
+        super(starRobot, BulkReadHook.INSTANCE);
+        this.starRobot = starRobot;
 
         Scheduler.reset();
     }
@@ -42,36 +35,21 @@ public class TeleopLLTest extends NextOpMode {
         CommandGamepad gp2 = new CommandGamepad(gamepad2);
 
 
-        robot.init().schedule();
+        starRobot.init().schedule();
 
-        hazmatRobot.startDrive(gamepad1);
-
-        gp1.leftBumper().onTrue(instant(()->hazmatRobot.getIntake().cycle()));
-        gp1.rightBumper().onTrue(hazmatRobot.launch());
-
-        gp1.dpadUp().onTrue(hazmatRobot.getLauncher().setPollen());
-        gp1.dpadDown().onTrue(hazmatRobot.getLauncher().setNectar());
-
-/*
-        gp2.dpadUp().onTrue(hazmatRobot.getLauncher().incrementPower());
-        gp2.dpadDown().onTrue(hazmatRobot.getLauncher().decrementPower());*/
-
-        gp2.circle().onTrue(hazmatRobot.getTransfer().open());
-        gp2.square().onTrue(hazmatRobot.getTransfer().close());
+        starRobot.startDrive(gamepad1);
 
     }
 
     @Override
     public void periodic() {
-        telemetry.addData("Intake Speed", hazmatRobot.getIntake().getSpeed());
-        telemetry.addData("Lift Position", hazmatRobot.getLift().getPos());
-        telemetry.addData("Bucket Position", hazmatRobot.getTransfer().getRampServo().getPosition());
-        telemetry.addData("Launcher Motor Velocity", hazmatRobot.getLauncher().getLauncherMotor().getEncoderVelocity().into(RotationsPerMinute));
-
-        telemetry.update();
+        if (hasMatchStarted) {
+            infinite(() -> starRobot.getTurret().moveError(starRobot.getLimeLight().getTx()));
+        }
     }
 
     @Override
     public void end() {
+
     }
 }

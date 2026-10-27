@@ -1,6 +1,6 @@
-package org.firstinspires.ftc.teamcode.Robot;
+package org.firstinspires.ftc.teamcode.Data;
 
-public class PIDController {
+public class PidController {
     private double kp; // Proportional gain
     private double ki; // Integral gain
     private double kd; // Derivative gain
@@ -9,7 +9,7 @@ public class PIDController {
     private double integral; // Integral term accumulation
     private double previousError; // Previous error value
 
-    public PIDController(double kp, double ki, double kd) {
+    public PidController() {
         this.kp = kp;
         this.ki = ki;
         this.kd = kd;
@@ -63,5 +63,6 @@ public class PIDController {
         previousError = error;
         return output;
     }
+
 }
 
