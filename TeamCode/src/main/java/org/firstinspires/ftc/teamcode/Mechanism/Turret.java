@@ -70,7 +70,7 @@ public class Turret implements Mechanism {
 //    }
 
     public void moveError(double tx) {
-        turretLL.setPositionSetpoint(Degrees.of(tx));
+        turretLL.setAbsolutePositionSetpoint(Degrees.of(tx));
     }
 
 }
