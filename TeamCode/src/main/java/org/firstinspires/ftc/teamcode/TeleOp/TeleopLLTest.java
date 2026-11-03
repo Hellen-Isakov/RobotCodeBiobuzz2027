@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.TeleOp;
 import static com.pedropathing.ivy.commands.Commands.infinite;
 
 import com.pedropathing.ivy.Scheduler;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.Data.StarRobot;
 import org.firstinspires.ftc.teamcode.Mechanism.Turret;
@@ -12,6 +13,7 @@ import dev.nextftc.robot.opmode.NextOpMode;
 import dev.nextftc.robot.opmode.NextTeleop;
 import dev.nextftc.robot.triggers.CommandGamepad;
 import dev.nextftc.robot.triggers.Trigger;
+import kotlin.jvm.JvmField;
 
 @NextTeleop(name = "A TeleopLL")
 public class TeleopLLTest extends NextOpMode {
@@ -29,16 +31,13 @@ public class TeleopLLTest extends NextOpMode {
 
     @Override
     public void start() {
-        Trigger.Companion.getDefaultEventLoop().clear();
+        hasMatchStarted = true;
 
         CommandGamepad gp1 = new CommandGamepad(gamepad1);
         CommandGamepad gp2 = new CommandGamepad(gamepad2);
 
-
         starRobot.init().schedule();
-
         starRobot.startDrive(gamepad1);
-
     }
 
     @Override

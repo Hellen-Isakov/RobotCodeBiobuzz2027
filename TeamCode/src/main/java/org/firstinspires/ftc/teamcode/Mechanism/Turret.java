@@ -27,8 +27,8 @@ public class Turret implements Mechanism {
             0.01, 0.0, 0.001
     ));
 
-    public void initialize() {
-        turretLL.setZeroPowerBehavior(NextMotor.ZeroPowerBehavior.FLOAT);
+    public Command initialize() {
+        return infinite(()-> turretLL.setZeroPowerBehavior(NextMotor.ZeroPowerBehavior.FLOAT));
     }
 
     public boolean isMagnetPressed(){
@@ -41,18 +41,10 @@ public class Turret implements Mechanism {
 
     @Override
     public void periodic() {
-//        double PIDPower = pid.calculateOutput(getAngle(), ActiveOpMode.getRuntime());
 
         Telemetry.log("Target LL: ", pid.getError());
         Telemetry.update();
     }
-//    public double getTarget() {
-//        return pid.();
-//    }
-//
-//    public void ResetEncoder() {
-//        offset = (turretLL.getEncoderPosition() * RobotMap.TURRET_GEAR_RATIO );
-//    }
 
     public double getOffset() {
         return offset;

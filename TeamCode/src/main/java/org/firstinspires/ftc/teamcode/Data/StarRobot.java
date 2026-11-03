@@ -46,9 +46,10 @@ public class StarRobot implements NextRobot {
         ).schedule();
     }
 
-    public Command init(){
+    public Command init() {
         return parallel(
-                limeLight.initialize()
+                limeLight.initialize(),
+                turret.initialize()
         );
     }
 

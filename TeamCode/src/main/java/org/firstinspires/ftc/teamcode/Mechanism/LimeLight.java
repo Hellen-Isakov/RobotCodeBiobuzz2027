@@ -60,9 +60,8 @@ public class LimeLight implements Mechanism {
 //                "limelight"
 //        );
 
-        limelight.startReading(0, 100);
         limelight.start();
-        return null;
+        return infinite(()-> limelight.startReading(0, 100));
     }
 
     @Override
