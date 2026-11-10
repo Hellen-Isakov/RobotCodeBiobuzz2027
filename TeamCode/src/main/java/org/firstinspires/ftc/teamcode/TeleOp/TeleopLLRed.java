@@ -41,6 +41,8 @@ public class TeleopLLRed extends NextOpMode {
 //                gamepad1.right_stick_x,
 //                follower.pose().heading()
 //        );
+
+        gp1.a().onTrue(starRobot.getTurret().tryout(1));
     }
 
     @Override
