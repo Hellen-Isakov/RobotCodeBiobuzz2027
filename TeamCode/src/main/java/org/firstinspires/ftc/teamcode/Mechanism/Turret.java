@@ -11,6 +11,7 @@ import org.firstinspires.ftc.teamcode.Data.RobotMap;
 import org.firstinspires.ftc.teamcode.Data.StarRobot;
 
 import dev.nextftc.control.feedback.PIDController;
+import dev.nextftc.hardware.RobotController;
 import dev.nextftc.hardware.actuators.NextMotor;
 import dev.nextftc.hardware.sensors.NextDigitalSensor;
 import dev.nextftc.robot.Mechanism;
@@ -28,7 +29,7 @@ public class Turret implements Mechanism {
     ));
 
     public Command initialize() {
-        return infinite(()-> turretLL.setZeroPowerBehavior(NextMotor.ZeroPowerBehavior.FLOAT));
+        return infinite(()-> turretLL.setZeroPowerBehavior(NextMotor.ZeroPowerBehavior.BRAKE));
     }
 
     public boolean isMagnetPressed(){
@@ -70,7 +71,7 @@ public class Turret implements Mechanism {
 //    }
 
     public void moveError(double tx) {
-        turretLL.setAbsolutePositionSetpoint(Degrees.of(tx));
+        turretLL.setAnglePerCount(Degrees.of(tx));
     }
 
 }
