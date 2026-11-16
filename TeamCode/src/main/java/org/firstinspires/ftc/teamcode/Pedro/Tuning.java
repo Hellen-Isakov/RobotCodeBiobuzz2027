@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Pedro;
+package org.firstinspires.ftc.teamcode.pedro;
 
 import com.pedropathing.revhub.drivetrains.Mecanum;
 import com.pedropathing.revhub.localizers.PinpointConfig;
@@ -8,6 +8,7 @@ import com.pedropathing.tuning.autotune.Tuner;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.pedro.Constants;
 import org.firstinspires.ftc.teamcode.Pedro.procedures.ForesightTuner;
 import org.firstinspires.ftc.teamcode.Pedro.procedures.MecanumTuner;
 import org.firstinspires.ftc.teamcode.Pedro.procedures.PinpointTuner;
