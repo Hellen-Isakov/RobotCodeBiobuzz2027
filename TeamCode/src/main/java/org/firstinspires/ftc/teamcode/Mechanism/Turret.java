@@ -16,33 +16,16 @@ import dev.nextftc.hardware.actuators.NextMotor;
 import dev.nextftc.hardware.sensors.NextDigitalSensor;
 import dev.nextftc.robot.Mechanism;
 import dev.nextftc.robot.Telemetry;
-
-//import android.annotation.SuppressLint;
-//import android.content.Context;
-//import com.qualcomm.ftccommon.FtcEventLoop;
-//import com.qualcomm.hardware.lynx.LynxModule;
-//import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-//import com.qualcomm.robotcore.eventloop.opmode.OpModeManagerNotifier;
-//import com.qualcomm.robotcore.hardware.HardwareMap;
-//import com.qualcomm.robotcore.hardware.configuration.LynxConstants;
-//import dev.frozenmilk.sinister.sdk.apphooks.OnCreateEventLoop;
-//import dev.nextftc.hardware.lynx.NextLynxModule;
-//import dev.nextftc.hardware.util.LazyHardware;
-//import dev.nextftc.units.celsius;
-//import dev.nextftc.units.measuretypes.Temperature;
-//import dev.nextftc.units.measuretypes.Voltage;
-//import dev.nextftc.units.volts;
-//import org.firstinspires.ftc.robotcore.external.navigation.TempUnit;
-//import org.firstinspires.ftc.robotcore.external.navigation.VoltageUnit;
-//import java.util.Collections;
-//import java.util.WeakHashMap;
+import dev.nextftc.units.Unit;
+import dev.nextftc.units.Units;
+import dev.nextftc.units.measuretypes.Angle;
 
 
 
 public class Turret implements Mechanism {
 
     double offset = 0;
-    NextDigitalSensor magnet = new NextDigitalSensor("magnet");
+//    NextDigitalSensor magnet = new NextDigitalSensor("magnet");
 
     NextMotor turretLL = new NextMotor("3C");
 
@@ -54,12 +37,8 @@ public class Turret implements Mechanism {
         return infinite(()-> turretLL.setZeroPowerBehavior(NextMotor.ZeroPowerBehavior.BRAKE));
     }
 
-    public boolean isMagnetPressed(){
-        return magnet.isTriggered();
-    }
-
-//    public double getAngle() {
-//        return (turretLL.getPositionConstants() * RobotMap.TURRET_GEAR_RATIO) - offset;
+//    public boolean isMagnetPressed(){
+//        return magnet.isTriggered();
 //    }
 
     public Command tryout(double pow) {
@@ -68,7 +47,11 @@ public class Turret implements Mechanism {
 
     @Override
     public void periodic() {
-        Telemetry.log("Target LL: ", pid.getError());
+        Telemetry.log("pid error: ", pid.getCoefficients());
+        Telemetry.log("pid error: ", pid.getLastError());
+        Telemetry.log("turret encoder pos (radians): ", turretLL.getAbsoluteEncoderPosition());
+        Telemetry.log("turret pow: ", turretLL.getThrottle());
+
         Telemetry.update();
     }
 
@@ -79,24 +62,10 @@ public class Turret implements Mechanism {
     public void setOffset(double offset) {
         this.offset = offset;
     }
-//
-//    public Command FollowTarget() {
-//        double tx = LimeLight.getTx();
-//        Telemetry.log("tx", tx);
-//        Telemetry.update();
-//        return infinite(()-> PidController.setTarget(tx));
-//    }
-//
-//    public void moveToSetDegree(double deg) {
-//         PidController.setTarget(deg);
-//    }
-//
-//    public void moveDegrees(double deg) {
-//        moveToSetDegree(getAngle() + deg);
-//    }
 
     public Command moveError(double tx) {
-        return instant(()-> turretLL.setAnglePerCount(Degrees.of(tx)));
+//        return infinite(()-> turretLL.setPositionSetpoint(Degrees.of(tx)));
+        return infinite(()-> pid.getError());
     }
 
 }

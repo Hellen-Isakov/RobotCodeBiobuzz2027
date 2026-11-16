@@ -98,6 +98,8 @@ public class LimeLightRed implements Mechanism {
 
         if (obeliskMap.containsKey(id)) {
             Telemetry.log("Target Color", Objects.requireNonNull(obeliskMap.get(id)));
+        } else {
+            Telemetry.log("no target");
         }
 
         Telemetry.update();

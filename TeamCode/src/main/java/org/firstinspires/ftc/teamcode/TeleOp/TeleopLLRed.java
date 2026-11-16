@@ -11,7 +11,7 @@ import dev.nextftc.robot.opmode.NextOpMode;
 import dev.nextftc.robot.opmode.NextTeleop;
 import dev.nextftc.robot.triggers.CommandGamepad;
 
-@NextTeleop(name = "A TeleopLL")
+@NextTeleop(name = "A TeleopLL Red")
 public class TeleopLLRed extends NextOpMode {
 
     public boolean hasMatchStarted = false; 
@@ -42,14 +42,15 @@ public class TeleopLLRed extends NextOpMode {
 //                follower.pose().heading()
 //        );
 
-        gp1.a().onTrue(starRobot.getTurret().tryout(1));
+        gp1.a().onTrue(starRobot.getTurret().tryout(0.2)); // yay motor works
+        gp1.y().onTrue(starRobot.getTurret().tryout(-0.2));
+        gp1.b().onTrue(starRobot.getTurret().tryout(0));
     }
 
     @Override
     public void periodic() {
         if (hasMatchStarted) {
-            infinite(() -> starRobot.getTurret().moveError(
-                    starRobot.getLimeLightRed().getTx()));
+            infinite(() -> starRobot.getTurret().moveError(starRobot.getLimeLightRed().getTx()));
         }
     }
 
