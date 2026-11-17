@@ -30,7 +30,6 @@ public class TeleopLLRed extends NextOpMode {
         hasMatchStarted = true;
 
         CommandGamepad gp1 = new CommandGamepad(gamepad1);
-        CommandGamepad gp2 = new CommandGamepad(gamepad2);
 
         starRobot.init().schedule();
 //        starRobot.startDrive(gamepad1); // TODO: needs to be tuned
@@ -42,15 +41,19 @@ public class TeleopLLRed extends NextOpMode {
 //                follower.pose().heading()
 //        );
 
-        gp1.a().onTrue(starRobot.getTurret().tryout(0.2)); // yay motor works
-        gp1.y().onTrue(starRobot.getTurret().tryout(-0.2));
-        gp1.b().onTrue(starRobot.getTurret().tryout(0));
+        gp1.a().onTrue(starRobot.getLimeLightRed().tryout(0.2)); // yay motor works
+        gp1.y().onTrue(starRobot.getLimeLightRed().tryout(-0.2));
+        gp1.b().onTrue(starRobot.getLimeLightRed().tryout(0));
+
+//        gp1.dpadUp().onTrue(starRobot.getTurret().tryoutY(1));
+//        gp1.dpadDown().onTrue(starRobot.getTurret().tryoutY(0));
     }
 
     @Override
     public void periodic() {
         if (hasMatchStarted) {
-            infinite(() -> starRobot.getTurret().moveError(starRobot.getLimeLightRed().getTx()));
+            starRobot.getLimeLightRed().periodic();
+//            infinite(() -> starRobot.getLimeLightRed().moveError(starRobot.getLimeLightRed().getTx()));
         }
     }
 

@@ -28,6 +28,7 @@ public class Turret implements Mechanism {
 //    NextDigitalSensor magnet = new NextDigitalSensor("magnet");
 
     NextMotor turretLL = new NextMotor("3C");
+    NextMotor YDead = new NextMotor("1C");
 
     PIDController pid = new PIDController(new dev.nextftc.control.feedback.PIDCoefficients(
             0.01, 0.0, 0.001
@@ -43,6 +44,15 @@ public class Turret implements Mechanism {
 
     public Command tryout(double pow) {
         return instant(()-> turretLL.setThrottle(pow));
+    }
+
+    public Command tryoutY(double pow) {
+        return instant(()-> YDead.setThrottle(pow));
+    }
+
+
+    public Command moveError(double tx) {
+        return infinite(()-> pid.calculate(tx));
     }
 
     @Override
@@ -63,9 +73,13 @@ public class Turret implements Mechanism {
         this.offset = offset;
     }
 
-    public Command moveError(double tx) {
-//        return infinite(()-> turretLL.setPositionSetpoint(Degrees.of(tx)));
-        return infinite(()-> pid.getError());
-    }
+//    public void moveToSetDegree(double deg) {
+//        pid.setTarget(deg);
+//    }
+//
+//    public void moveDegrees(double deg) {
+//        moveToSetDegree(getAngle() + deg);
+//    }
+
 
 }
