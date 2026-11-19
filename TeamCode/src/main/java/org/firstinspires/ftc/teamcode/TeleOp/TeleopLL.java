@@ -1,7 +1,5 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
-import static com.pedropathing.ivy.commands.Commands.infinite;
-
 import com.pedropathing.ivy.Scheduler;
 
 import org.firstinspires.ftc.teamcode.Data.StarRobot;
@@ -11,14 +9,14 @@ import dev.nextftc.robot.opmode.NextOpMode;
 import dev.nextftc.robot.opmode.NextTeleop;
 import dev.nextftc.robot.triggers.CommandGamepad;
 
-@NextTeleop(name = "A TeleopLL Red")
-public class TeleopLLRed extends NextOpMode {
+@NextTeleop(name = "A TeleopLL")
+public class TeleopLL extends NextOpMode {
 
     public boolean hasMatchStarted = false; 
 
     public StarRobot starRobot;
 
-    public TeleopLLRed(StarRobot starRobot) {
+    public TeleopLL(StarRobot starRobot) {
         super(starRobot, BulkReadHook.INSTANCE);
         this.starRobot = starRobot;
 
@@ -44,16 +42,12 @@ public class TeleopLLRed extends NextOpMode {
         gp1.a().onTrue(starRobot.getLimeLightRed().tryout(0.2)); // yay motor works
         gp1.y().onTrue(starRobot.getLimeLightRed().tryout(-0.2));
         gp1.b().onTrue(starRobot.getLimeLightRed().tryout(0));
-
-//        gp1.dpadUp().onTrue(starRobot.getTurret().tryoutY(1));
-//        gp1.dpadDown().onTrue(starRobot.getTurret().tryoutY(0));
     }
 
     @Override
     public void periodic() {
         if (hasMatchStarted) {
             starRobot.getLimeLightRed().periodic();
-//            infinite(() -> starRobot.getLimeLightRed().moveError(starRobot.getLimeLightRed().getTx()));
         }
     }
 

@@ -8,7 +8,7 @@ import com.pedropathing.ivy.Command;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 import org.firstinspires.ftc.teamcode.Mechanism.Drivetrain;
-import org.firstinspires.ftc.teamcode.Mechanism.LimeLightRed;
+import org.firstinspires.ftc.teamcode.Mechanism.LimeLight_Turret;
 import org.firstinspires.ftc.teamcode.Mechanism.Turret;
 
 import java.util.Set;
@@ -19,13 +19,13 @@ import dev.nextftc.robot.drive.DriveCommands;
 
 public class StarRobot implements NextRobot {
     public Alliance alliance;
-    public final LimeLightRed limeLightRed = new LimeLightRed();
+    public final LimeLight_Turret limeLightTurret = new LimeLight_Turret();
 //    public final LimeLightBlue limeLightBlue = new LimeLightBlue();
     public final Turret turret = new Turret();
     public final Drivetrain drivetrain = new Drivetrain();
 
-    public LimeLightRed getLimeLightRed() {
-            return limeLightRed;
+    public LimeLight_Turret getLimeLightRed() {
+            return limeLightTurret;
         }
 //    public LimeLightBlue getLimeLightBlue() {
 //            return limeLightBlue;
@@ -52,7 +52,7 @@ public class StarRobot implements NextRobot {
 
     public Command init() {
         return parallel(
-                limeLightRed.initialize(),
+                limeLightTurret.initialize(),
 //                limeLightBlue.initialize(),
                 turret.initialize()
         );
@@ -61,7 +61,7 @@ public class StarRobot implements NextRobot {
     @NonNull
     @Override
     public Set<Mechanism> getMechanisms() {
-        return Set.of(limeLightRed /*limeLightBlue*/, turret, drivetrain);
+        return Set.of(limeLightTurret /*limeLightBlue*/, turret, drivetrain);
     }
 
 }
