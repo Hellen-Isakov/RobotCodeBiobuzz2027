@@ -28,15 +28,11 @@ public class LimeLight_Turret implements Mechanism {
     NextLimelight limelightRed = new NextLimelight("limelight");
     public double tx = 0;
     public double ty = 0;
-    public boolean isReset = false;
-
-    public static final double TICKS_PER_ROTATION = 537.6 ; //312rpm motor
 
 //    NextDigitalSensor magnet = new NextDigitalSensor("magnet");
 
-    PIDController pid = new PIDController(new PIDCoefficients(0.01, 0.0, 0.001));
-
     private boolean hasTarget = false;
+    PIDController pid = new PIDController(new PIDCoefficients(0.01, 0.0, 0.001));
 
     private final HashMap<Integer, String> obeliskMap = new HashMap<>();
 
@@ -69,12 +65,10 @@ public class LimeLight_Turret implements Mechanism {
 //                Telemetry.log("tx: ", result.getTx());
 //                Telemetry.log("ty: ", result.getTy());
 //                Telemetry.log("BotPose: ", botpose.toString());
-//
 //            }
 //        }
 
         LLResult result = limelightRed.getLatestResult();
-        result.getPipelineIndex();
 
         if (result != null && result.isValid()) {
             double tx = result.getTx(); // How far left or right the target is (degrees)
@@ -92,6 +86,7 @@ public class LimeLight_Turret implements Mechanism {
 
         List<FiducialResult> fiducials = result.getFiducialResults();
         FiducialResult fiducial = fiducials.get(0); // takes the first fiducial
+        //TODO: shows error - line 88. fix
 
         if (fiducials == null || fiducials.isEmpty()) {
             hasTarget = false;
