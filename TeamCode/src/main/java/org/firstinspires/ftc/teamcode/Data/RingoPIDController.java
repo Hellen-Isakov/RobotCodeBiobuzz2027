@@ -1,6 +1,6 @@
 package org.firstinspires.ftc.teamcode.Data;
 
-public class RingoPidController {
+public class RingoPIDController {
     private double kp; // Proportional gain
     private double ki; // Integral gain
     private double kd; // Derivative gain
@@ -9,7 +9,7 @@ public class RingoPidController {
     private double integral; // Integral term accumulation
     private double previousError; // Previous error value
 
-    public RingoPidController(double kp, double ki, double kd) {
+    public RingoPIDController(double kp, double ki, double kd) {
         this.kp = kp;
         this.ki = ki;
         this.kd = kd;

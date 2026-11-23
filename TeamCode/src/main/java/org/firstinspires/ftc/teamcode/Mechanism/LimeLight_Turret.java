@@ -6,7 +6,7 @@ import com.pedropathing.ivy.Command;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes.FiducialResult;
 
-import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
+import org.firstinspires.ftc.teamcode.Data.RingoPIDController;
 
 import java.util.HashMap;
 import java.util.List;
@@ -17,12 +17,14 @@ import dev.nextftc.hardware.actuators.NextMotor;
 import dev.nextftc.hardware.webcams.NextLimelight;
 import dev.nextftc.robot.Mechanism;
 import dev.nextftc.robot.Telemetry;
-import dev.nextftc.robot.opmode.NextOpMode;
 import dev.nextftc.units.measuretypes.Angle;
 
 public class LimeLight_Turret implements Mechanism {
 
     NextMotor turretLL = new NextMotor("3C");
+    public LLResult llResult;
+    public RingoPIDController ringoPIDController;
+
     NextLimelight limelightRed = new NextLimelight("limelight");
     public double tx = 0;
     public double ty = 0;
@@ -56,75 +58,90 @@ public class LimeLight_Turret implements Mechanism {
     }
 
 
-
-//    double output = pid.calculate(setpoint - currentPosition);
-//
-//    public double getAngle() {
-//        turretLL.getAbsoluteEncoderPosition();
-//        return turretLL.getAbsoluteEncoderPosition();
-//    }
-//
-//    public void moveToSetDegree(double deg) {
-//        turretLL.setTarget(deg);
-//    }
-
-//    public void moveDegrees(double deg) {
-//        moveToSetDegree(getAngle() + deg);
-//    }
-
     @Override
     public void periodic() {
 
-        LLResult result = limelightRed.getLatestResult();
-        if (result != null) {
-            if (result.isValid()) {
-                Pose3D botpose = result.getBotpose();
-                Telemetry.log("tx: ", result.getTx());
-                Telemetry.log("ty: ", result.getTy());
+//        LLResult result = limelightRed.getLatestResult();
+//        result.getPipelineIndex();
+//        if (result != null) {
+//            if (result.isValid()) {
+//                Pose3D botpose = result.getBotpose();
+//                Telemetry.log("tx: ", result.getTx());
+//                Telemetry.log("ty: ", result.getTy());
 //                Telemetry.log("BotPose: ", botpose.toString());
+//
+//            }
+//        }
 
-            }
-        }
+        LLResult result = limelightRed.getLatestResult();
+        result.getPipelineIndex();
 
-        if (!result.isValid()) {
+        if (result != null && result.isValid()) {
+            double tx = result.getTx(); // How far left or right the target is (degrees)
+            double ty = result.getTy(); // How far up or down the target is (degrees)
+            double ta = result.getTa(); // How big the target looks (0%-100% of the image)
+
+            Telemetry.log("Target X", tx);
+            Telemetry.log("Target Y", ty);
+            Telemetry.log("Target Area", ta);
+        } else {
             hasTarget = false;
-            Telemetry.log("no target");
-            return;
+            Telemetry.log("Limelight", "No Targets");
         }
 
 
         List<FiducialResult> fiducials = result.getFiducialResults();
         FiducialResult fiducial = fiducials.get(0); // takes the first fiducial
+
         if (fiducials == null || fiducials.isEmpty()) {
             hasTarget = false;
-            Telemetry.log("no target");
+            Telemetry.log("no target f");
             return;
-        } else if (fiducials != null) {
-            Telemetry.log("");
+        } else {
             Telemetry.log("id: ", fiducial.getFiducialId());
         }
 
-        hasTarget = true;
 
+        hasTarget = true;
         Telemetry.update();
+
+    }
+
+
+    public double degPos() { //llConnectedToTurret
+
+        LLResult result = limelightRed.getLatestResult();
+
+        List<FiducialResult> fiducials = result.getFiducialResults();
+        FiducialResult fiducial = fiducials.get(0); // takes the first fiducial
 
         double LLtx = fiducial.getTargetXDegrees();
         Angle LLCurrentPos = turretLL.getEncoderPosition();
+
         double degPos = LLCurrentPos.into(Degrees);
 
+        return degPos;
 
-        double pidOutput = pid.calculate(LLtx - degPos); // setpoint - currentPosition
+//        double pidOutput = pid.calculate(LLtx - degPos); // setpoint - currentPosition
 
-        if(){
-            turretLL.setThrottle(pidOutput);
-        }
+//        if(pidOutput > 5){
+//            turretLL.setThrottle(pidOutput);
+//        } else if (pidOutput < -5) {
+//            turretLL.setThrottle(pidOutput);
+//        } else {
+//            turretLL.setThrottle(0);
+//        }
 
     }
 
-
-    public Command llNturret() {
-
+    public void moveToSetDegree(double deg) {
+        ringoPIDController.setTarget(deg);
     }
+
+    public void moveDegrees(double deg) {
+        moveToSetDegree(degPos() + deg);
+    }
+
 
 
     public double getTx() {
