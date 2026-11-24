@@ -48,7 +48,7 @@ public class TeleopLL extends NextOpMode {
     public void periodic() {
         if (hasMatchStarted) {
             starRobot.getLimeLightTurret().periodic();
-            infinite(()-> starRobot.getLimeLightTurret().moveDegrees(starRobot.getLimeLightTurret().getTx()));
+            infinite(()-> starRobot.getLimeLightTurret().moveDegrees(starRobot.getLimeLightTurret().getTx())).schedule();
 
         }
     }

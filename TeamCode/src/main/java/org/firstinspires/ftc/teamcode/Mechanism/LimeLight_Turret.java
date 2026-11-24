@@ -7,6 +7,7 @@ import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes.FiducialResult;
 
 import org.firstinspires.ftc.teamcode.Data.RingoPIDController;
+import org.firstinspires.ftc.teamcode.Data.RobotMap;
 
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +29,7 @@ public class LimeLight_Turret implements Mechanism {
     NextLimelight limelightRed = new NextLimelight("limelight");
     public double tx = 0;
     public double ty = 0;
+    double offset = 0;
 
 //    NextDigitalSensor magnet = new NextDigitalSensor("magnet");
 
@@ -40,15 +42,16 @@ public class LimeLight_Turret implements Mechanism {
 //        obeliskMap.put(30, "30");
 //        obeliskMap.put(31, "31");
 //        obeliskMap.put(32, "32");
-        obeliskMap.put(33, "33");
+//        obeliskMap.put(33, "33");
 //        obeliskMap.put(35, "34");
 //        obeliskMap.put(36, "35");
 //        obeliskMap.put(37, "36");
+
+        obeliskMap.put(33, "33");
+
     }
 
-//    @Override
     public Command initialize() {
-//        limelightRed = hardwareMap.get(Limelight3A.class, "limelight");
         limelightRed.start();
         return infinite(()-> limelightRed.startReading(0, 100));
     }
@@ -138,12 +141,12 @@ public class LimeLight_Turret implements Mechanism {
 
         LLResult result = limelightRed.getLatestResult();
 
-        List<FiducialResult> fiducials = result.getFiducialResults();
-        FiducialResult fiducial = fiducials.get(0); // takes the first fiducial
+//        List<FiducialResult> fiducials = result.getFiducialResults();
+//        FiducialResult fiducial = fiducials.get(0); // takes the first fiducial
 
-        double LLtx = fiducial.getTargetXDegrees();
+//        double LLtx = fiducial.getTargetXDegrees();
+
         Angle LLCurrentPos = turretLL.getEncoderPosition();
-
         double degPos = LLCurrentPos.into(Degrees);
 
         return degPos;
@@ -160,26 +163,16 @@ public class LimeLight_Turret implements Mechanism {
 
     }
 
-    public void moveToSetDegree(double deg) {
-        ringoPIDController.setTarget(deg);
-    }
-
-    public void moveDegrees(double degS) {
-        moveToSetDegree(DegPos() + degS);
-    }
-
-
-
     public double getTx() {
         return tx;
     }
 
-    public double getTy() {
-        return ty;
+    public void moveToSetDegree(double deg) {
+        ringoPIDController.setTarget(deg);
     }
 
-    public boolean hasTarget() {
-        return hasTarget;
+    public void moveDegrees(double deee) {
+        moveToSetDegree(DegPos() + deee);
     }
 
 

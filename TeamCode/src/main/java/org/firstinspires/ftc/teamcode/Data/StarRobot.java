@@ -24,6 +24,7 @@ public class StarRobot implements NextRobot {
     public final Turret turret = new Turret();
 //    public final Drivetrain drivetrain = new Drivetrain();
 
+    public StarRobot(){}
     public LimeLight_Turret getLimeLightTurret() {
             return limeLightTurret;
         }
