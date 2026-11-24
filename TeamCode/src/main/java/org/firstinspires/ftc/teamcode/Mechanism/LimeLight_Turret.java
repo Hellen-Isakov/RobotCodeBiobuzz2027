@@ -36,14 +36,14 @@ public class LimeLight_Turret implements Mechanism {
 
     private final HashMap<Integer, String> obeliskMap = new HashMap<>();
 
-    public LimeLight_Turret() { // 30,31,32,33,34,35,36,37
-//        obeliskMap.put(30, "RED SCORING");
-//        obeliskMap.put(31, "RED SCORING");
-//        obeliskMap.put(32, "RED SCORING");
-        obeliskMap.put(33, "RED SCORING");
-//        obeliskMap.put(35, "RED SCORING");
-//        obeliskMap.put(36, "RED SCORING");
-//        obeliskMap.put(37, "RED SCORING");
+    public LimeLight_Turret() { // RED
+//        obeliskMap.put(30, "30");
+//        obeliskMap.put(31, "31");
+//        obeliskMap.put(32, "32");
+        obeliskMap.put(33, "33");
+//        obeliskMap.put(35, "34");
+//        obeliskMap.put(36, "35");
+//        obeliskMap.put(37, "36");
     }
 
 //    @Override
@@ -68,42 +68,73 @@ public class LimeLight_Turret implements Mechanism {
 //            }
 //        }
 
-        LLResult result = limelightRed.getLatestResult();
+        LLResult resultLL = limelightRed.getLatestResult();
 
-        if (result != null && result.isValid()) {
-            double tx = result.getTx(); // How far left or right the target is (degrees)
-            double ty = result.getTy(); // How far up or down the target is (degrees)
-            double ta = result.getTa(); // How big the target looks (0%-100% of the image)
+        if (resultLL != null && resultLL.isValid()) {
+            double tx = resultLL.getTx();
+            double ty = resultLL.getTy();
+            double ta = resultLL.getTa();
 
-            Telemetry.log("Target X", tx);
-            Telemetry.log("Target Y", ty);
-            Telemetry.log("Target Area", ta);
+            Telemetry.log("Target X: ", tx);
+            Telemetry.log("Target Y: ", ty);
+            Telemetry.log("Target Area: ", ta);
+            Telemetry.update();
         } else {
             hasTarget = false;
             Telemetry.log("Limelight", "No Targets");
+            Telemetry.update();
         }
 
 
-        List<FiducialResult> fiducials = result.getFiducialResults();
-        FiducialResult fiducial = fiducials.get(0); // takes the first fiducial
-        //TODO: shows error - line 88. fix
+        List<FiducialResult> fiducials = resultLL.getFiducialResults();
 
         if (fiducials == null || fiducials.isEmpty()) {
             hasTarget = false;
-            Telemetry.log("no target f");
+            Telemetry.log("no target - fiducials");
             return;
         } else {
-            Telemetry.log("id: ", fiducial.getFiducialId());
+            hasTarget = true;
+            Telemetry.log("fiducials work");
         }
 
-
         hasTarget = true;
-        Telemetry.update();
+
+        FiducialResult fiducial = fiducials.get(0);
+
+        int id = fiducial.getFiducialId();
+        tx = fiducial.getTargetXDegrees();
+        ty = fiducial.getTargetYDegrees();
+
+        Telemetry.log("Target ID", id);
+        Telemetry.log("Target X", tx);
+        Telemetry.log("Target Y", ty);
+
+
+//        if (obeliskMap.containsKey(id)) {
+//            Telemetry.log("Target Color", obeliskMap.get(id));
+//            Telemetry.update();
+//        }
+
+//        List<FiducialResult> fiducials = result.getFiducialResults();
+//        FiducialResult fiducial = fiducials.get(0); // takes the first fiducial
+//        //TODO: shows error - line 88. fix
+//
+//        if (fiducial == null || fiducials.isEmpty()) {
+//            hasTarget = false;
+//            Telemetry.log("no target f");
+//            Telemetry.update();
+//            return;
+//        } else {
+//            hasTarget = true;
+//            Telemetry.log("id: ", fiducial.getFiducialId());
+//            Telemetry.update();
+//            return;
+//        }
 
     }
 
 
-    public double degPos() { //llConnectedToTurret
+    public double DegPos() {
 
         LLResult result = limelightRed.getLatestResult();
 
@@ -118,7 +149,7 @@ public class LimeLight_Turret implements Mechanism {
         return degPos;
 
 //        double pidOutput = pid.calculate(LLtx - degPos); // setpoint - currentPosition
-
+//
 //        if(pidOutput > 5){
 //            turretLL.setThrottle(pidOutput);
 //        } else if (pidOutput < -5) {
@@ -133,8 +164,8 @@ public class LimeLight_Turret implements Mechanism {
         ringoPIDController.setTarget(deg);
     }
 
-    public void moveDegrees(double deg) {
-        moveToSetDegree(degPos() + deg);
+    public void moveDegrees(double degS) {
+        moveToSetDegree(DegPos() + degS);
     }
 
 
