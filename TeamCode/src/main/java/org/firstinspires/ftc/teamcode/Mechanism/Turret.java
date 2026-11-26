@@ -24,62 +24,24 @@ import dev.nextftc.units.measuretypes.Angle;
 
 public class Turret implements Mechanism {
 
-    double offset = 0;
-//    NextDigitalSensor magnet = new NextDigitalSensor("magnet");
-
-    NextMotor turretLL = new NextMotor("3C");
-    NextMotor YDead = new NextMotor("1C");
+    NextMotor turret = new NextMotor("3C");
 
     PIDController pid = new PIDController(new dev.nextftc.control.feedback.PIDCoefficients(
             0.01, 0.0, 0.001
     ));
+//    double output = pid.calculate(setpoint - currentPosition);
 
     public Command initialize() {
-        return infinite(()-> turretLL.setZeroPowerBehavior(NextMotor.ZeroPowerBehavior.BRAKE));
+        return infinite(() -> turret.setZeroPowerBehavior(NextMotor.ZeroPowerBehavior.BRAKE));
     }
-
-//    public boolean isMagnetPressed(){
-//        return magnet.isTriggered();
-//    }
 
     public Command tryout(double pow) {
-        return instant(()-> turretLL.setThrottle(pow));
-    }
-
-    public Command tryoutY(double pow) {
-        return instant(()-> YDead.setThrottle(pow));
-    }
-
-
-    public Command moveError(double tx) {
-        return infinite(()-> pid.calculate(tx));
+        return instant(() -> turret.setThrottle(pow));
     }
 
     @Override
     public void periodic() {
-        Telemetry.log("pid error: ", pid.getCoefficients());
-        Telemetry.log("pid error: ", pid.getLastError());
-        Telemetry.log("turret encoder pos (radians): ", turretLL.getAbsoluteEncoderPosition());
-        Telemetry.log("turret pow: ", turretLL.getThrottle());
 
-        Telemetry.update();
     }
-
-    public double getOffset() {
-        return offset;
-    }
-
-    public void setOffset(double offset) {
-        this.offset = offset;
-    }
-
-//    public void moveToSetDegree(double deg) {
-//        pid.setTarget(deg);
-//    }
-//
-//    public void moveDegrees(double deg) {
-//        moveToSetDegree(getAngle() + deg);
-//    }
-
 
 }

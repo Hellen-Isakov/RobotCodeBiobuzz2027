@@ -5,6 +5,7 @@ import static dev.nextftc.units.Units.Degrees;
 import com.pedropathing.ivy.Command;
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes.FiducialResult;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Data.RingoPIDController;
 import org.firstinspires.ftc.teamcode.Data.RobotMap;
@@ -18,23 +19,29 @@ import dev.nextftc.hardware.actuators.NextMotor;
 import dev.nextftc.hardware.webcams.NextLimelight;
 import dev.nextftc.robot.Mechanism;
 import dev.nextftc.robot.Telemetry;
+import dev.nextftc.robot.opmode.NextOpMode;
 import dev.nextftc.units.measuretypes.Angle;
 
 public class LimeLight_Turret implements Mechanism {
 
+    private final ElapsedTime timer = new ElapsedTime();
+    double runtime = timer.seconds();
+
     NextMotor turretLL = new NextMotor("3C");
     public LLResult llResult;
-    public RingoPIDController ringoPIDController;
 
     NextLimelight limelightRed = new NextLimelight("limelight");
+
+    double turretCurrentPos;
     public double tx = 0;
+    public double ta = 0;
     public double ty = 0;
     double offset = 0;
 
 //    NextDigitalSensor magnet = new NextDigitalSensor("magnet");
 
     private boolean hasTarget = false;
-    PIDController pid = new PIDController(new PIDCoefficients(0.01, 0.0, 0.001));
+    private final RingoPIDController pid = new RingoPIDController(0.01, 0.0, 0.0);
 
     private final HashMap<Integer, String> obeliskMap = new HashMap<>();
 
@@ -56,31 +63,35 @@ public class LimeLight_Turret implements Mechanism {
         return infinite(()-> limelightRed.startReading(0, 100));
     }
 
+    public void RSTtimer(){
+        timer.reset();
+    }
+
 
     @Override
     public void periodic() {
+        runtime = timer.seconds();
+        Telemetry.log("Target X: ", tx);
+        Telemetry.log("Target Y: ", ty);
+        Telemetry.log("encoder: ", getAngle());
+        Telemetry.log("runtime ", runtime);
+        Telemetry.log("Target: ", pid.getTarget());
 
-//        LLResult result = limelightRed.getLatestResult();
-//        result.getPipelineIndex();
-//        if (result != null) {
-//            if (result.isValid()) {
-//                Pose3D botpose = result.getBotpose();
-//                Telemetry.log("tx: ", result.getTx());
-//                Telemetry.log("ty: ", result.getTy());
-//                Telemetry.log("BotPose: ", botpose.toString());
-//            }
-//        }
+
+
+        double PIDPower = pid.calculateOutput(getAngle(), runtime);
+
+        turretLL.setThrottle(PIDPower);
 
         LLResult resultLL = limelightRed.getLatestResult();
 
         if (resultLL != null && resultLL.isValid()) {
-            double tx = resultLL.getTx();
-            double ty = resultLL.getTy();
-            double ta = resultLL.getTa();
+            tx = resultLL.getTx();
+            ty = resultLL.getTy();
+            ta = resultLL.getTa();
+            Telemetry.log("PID power: ", PIDPower);
 
-            Telemetry.log("Target X: ", tx);
-            Telemetry.log("Target Y: ", ty);
-            Telemetry.log("Target Area: ", ta);
+
             Telemetry.update();
         } else {
             hasTarget = false;
@@ -88,30 +99,24 @@ public class LimeLight_Turret implements Mechanism {
             Telemetry.update();
         }
 
+        Angle LLCurrentPos = turretLL.getEncoderPosition();
+        turretCurrentPos = LLCurrentPos.into(Degrees);
 
-        List<FiducialResult> fiducials = resultLL.getFiducialResults();
 
-        if (fiducials == null || fiducials.isEmpty()) {
-            hasTarget = false;
-            Telemetry.log("no target - fiducials");
-            return;
-        } else {
-            hasTarget = true;
-            Telemetry.log("fiducials work");
-        }
+        /*List<FiducialResult> fiducials = resultLL.getFiducialResults();
 
         hasTarget = true;
 
         FiducialResult fiducial = fiducials.get(0);
 
-        int id = fiducial.getFiducialId();
-        tx = fiducial.getTargetXDegrees();
-        ty = fiducial.getTargetYDegrees();
+//        int id = fiducial.getFiducialId();
+//        tx = fiducial.getTargetXDegrees();
+//        ty = fiducial.getTargetYDegrees();
 
-        Telemetry.log("Target ID", id);
+//        Telemetry.log("Target ID", id);
         Telemetry.log("Target X", tx);
         Telemetry.log("Target Y", ty);
-
+*/
 
 //        if (obeliskMap.containsKey(id)) {
 //            Telemetry.log("Target Color", obeliskMap.get(id));
@@ -136,52 +141,54 @@ public class LimeLight_Turret implements Mechanism {
 
     }
 
+//    public double getTx() {
+//        return tx;
+//    }
 
-    public double DegPos() {
-
-        LLResult result = limelightRed.getLatestResult();
-
-//        List<FiducialResult> fiducials = result.getFiducialResults();
-//        FiducialResult fiducial = fiducials.get(0); // takes the first fiducial
-
-//        double LLtx = fiducial.getTargetXDegrees();
-
-        Angle LLCurrentPos = turretLL.getEncoderPosition();
-        double degPos = LLCurrentPos.into(Degrees);
-
-        return degPos;
-
-//        double pidOutput = pid.calculate(LLtx - degPos); // setpoint - currentPosition
-//
-//        if(pidOutput > 5){
-//            turretLL.setThrottle(pidOutput);
-//        } else if (pidOutput < -5) {
-//            turretLL.setThrottle(pidOutput);
-//        } else {
-//            turretLL.setThrottle(0);
-//        }
-
+    public void ResetEncoder() {
+        offset = (turretCurrentPos * RobotMap.TURRET_GEAR_RATIO );
     }
 
-    public double getTx() {
-        return tx;
+    public double getAngle() {
+        return (turretCurrentPos * RobotMap.TURRET_GEAR_RATIO) - offset;
     }
 
     public void moveToSetDegree(double deg) {
-        ringoPIDController.setTarget(deg);
+        pid.setTarget(deg);
     }
 
-    public void moveDegrees(double deee) {
-        moveToSetDegree(DegPos() + deee);
+    public void moveDegrees() {
+        moveToSetDegree(getAngle() + tx);
     }
 
 
-    //------------------------------ from turret ------------------------------
-//    public boolean isMagnetPressed(){
-//        return magnet.isTriggered();
+
+//    public void DegPos() {
+//
+////        LLResult result = limelightRed.getLatestResult();
+//
+////        List<FiducialResult> fiducials = result.getFiducialResults();
+////        FiducialResult fiducial = fiducials.get(0); // takes the first fiducial
+//
+////        double LLtx = fiducial.getTargetXDegrees();
+//
+//
+//
+//
+//
+////        return degPos;
+//        double pidOutput = pid.calculate(tx); // setpoint - currentPosition
+//
+//        turretLL.setThrottle(pidOutput);
+//
+////
+////        if(pidOutput > 5){
+////            turretLL.setThrottle(pidOutput);
+////        } else if (pidOutput < -5) {
+////            turretLL.setThrottle(pidOutput);
+////        } else {
+////            turretLL.setThrottle(0);
+////        }
+//
 //    }
-
-    public Command tryout(double pow) {
-        return instant(()-> turretLL.setThrottle(pow));
-    }
 }

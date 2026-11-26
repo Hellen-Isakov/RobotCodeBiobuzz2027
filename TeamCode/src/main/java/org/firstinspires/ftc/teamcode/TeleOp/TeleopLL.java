@@ -15,7 +15,7 @@ import dev.nextftc.robot.triggers.CommandGamepad;
 @NextTeleop(name = "A TeleopLL")
 public class TeleopLL extends NextOpMode {
 
-    public boolean hasMatchStarted = false; 
+    public boolean hasMatchStarted = false;
 
     public StarRobot starRobot;
 
@@ -28,8 +28,11 @@ public class TeleopLL extends NextOpMode {
 
     @Override
     public void start() {
-        hasMatchStarted = true;
+        starRobot.getLimeLightTurret().RSTtimer();
+        starRobot.getLimeLightTurret().periodic();
+        starRobot.getLimeLightTurret().ResetEncoder();
 
+        hasMatchStarted = true;
         starRobot.init().schedule();
 
 //        CommandGamepad gp1 = new CommandGamepad(gamepad1);
@@ -47,9 +50,11 @@ public class TeleopLL extends NextOpMode {
     @Override
     public void periodic() {
         if (hasMatchStarted) {
-            starRobot.getLimeLightTurret().periodic();
-            infinite(()-> starRobot.getLimeLightTurret().moveDegrees(starRobot.getLimeLightTurret().getTx())).schedule();
+//            starRobot.getLimeLightTurret().periodic();
 
+            starRobot.getLimeLightTurret().moveDegrees();
+            telemetry.addLine("matchStarted");
+            telemetry.update();
         }
     }
 
