@@ -8,6 +8,7 @@ import com.pedropathing.ivy.Command;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
 //import org.firstinspires.ftc.teamcode.Mechanism.Drivetrain;
+//import org.firstinspires.ftc.teamcode.Mechanism.Drivetrain;
 import org.firstinspires.ftc.teamcode.Mechanism.LimeLight_Turret;
 import org.firstinspires.ftc.teamcode.Mechanism.Turret;
 
@@ -19,7 +20,7 @@ import dev.nextftc.robot.drive.DriveCommands;
 
 public class StarRobot implements NextRobot {
     public Alliance alliance;
-    public final LimeLight_Turret limeLightTurret = new LimeLight_Turret();
+    public final LimeLight_Turret limeLightTurret = new LimeLight_Turret(Alliance.BLUE);
 //    public final LimeLightBlue limeLightBlue = new LimeLightBlue();
     public final Turret turret = new Turret();
 //    public final Drivetrain drivetrain = new Drivetrain();

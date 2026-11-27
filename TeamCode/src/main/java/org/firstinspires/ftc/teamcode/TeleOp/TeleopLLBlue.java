@@ -1,25 +1,25 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
-import static com.pedropathing.ivy.commands.Commands.infinite;
-import static com.pedropathing.ivy.commands.Commands.instant;
-
 import com.pedropathing.ivy.Scheduler;
 
+import org.firstinspires.ftc.teamcode.Data.Alliance;
 import org.firstinspires.ftc.teamcode.Data.StarRobot;
 
+import dev.nextftc.robot.Telemetry;
 import dev.nextftc.robot.opmode.BulkReadHook;
 import dev.nextftc.robot.opmode.NextOpMode;
 import dev.nextftc.robot.opmode.NextTeleop;
 import dev.nextftc.robot.triggers.CommandGamepad;
 
 @NextTeleop(name = "A TeleopLL")
-public class TeleopLL extends NextOpMode {
+public class TeleopLLBlue extends NextOpMode {
 
     public boolean hasMatchStarted = false;
+    public Alliance alliance = Alliance.BLUE;
 
     public StarRobot starRobot;
 
-    public TeleopLL(StarRobot starRobot) {
+    public TeleopLLBlue(StarRobot starRobot) {
         super(starRobot, BulkReadHook.INSTANCE);
         this.starRobot = starRobot;
 
@@ -36,14 +36,7 @@ public class TeleopLL extends NextOpMode {
         starRobot.init().schedule();
 
 //        CommandGamepad gp1 = new CommandGamepad(gamepad1);
-//        starRobot.startDrive(gamepad1); // TODO: needs to be tuned
-//
-//        DrivePowers powers = ManualDrive.fieldCentric(
-//                -gamepad1.left_stick_y,
-//                gamepad1.left_stick_x,
-//                gamepad1.right_stick_x,
-//                follower.pose().heading()
-//        );
+//        starRobot.startDrive(gamepad1);
 
     }
 
@@ -53,8 +46,8 @@ public class TeleopLL extends NextOpMode {
 //            starRobot.getLimeLightTurret().periodic();
 
             starRobot.getLimeLightTurret().moveDegrees();
-            telemetry.addLine("matchStarted");
-            telemetry.update();
+            Telemetry.log("matchStarted");
+            Telemetry.update();
         }
     }
 

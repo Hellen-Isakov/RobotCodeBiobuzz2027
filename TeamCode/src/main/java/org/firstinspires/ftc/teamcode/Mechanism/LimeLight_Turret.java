@@ -4,22 +4,22 @@ import static dev.nextftc.units.Units.Degrees;
 
 import com.pedropathing.ivy.Command;
 import com.qualcomm.hardware.limelightvision.LLResult;
-import com.qualcomm.hardware.limelightvision.LLResultTypes.FiducialResult;
+import com.qualcomm.hardware.limelightvision.LLResultTypes;
+import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.Data.Alliance;
 import org.firstinspires.ftc.teamcode.Data.RingoPIDController;
 import org.firstinspires.ftc.teamcode.Data.RobotMap;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import dev.nextftc.control.feedback.PIDCoefficients;
-import dev.nextftc.control.feedback.PIDController;
 import dev.nextftc.hardware.actuators.NextMotor;
 import dev.nextftc.hardware.webcams.NextLimelight;
 import dev.nextftc.robot.Mechanism;
 import dev.nextftc.robot.Telemetry;
-import dev.nextftc.robot.opmode.NextOpMode;
 import dev.nextftc.units.measuretypes.Angle;
 
 public class LimeLight_Turret implements Mechanism {
@@ -27,46 +27,48 @@ public class LimeLight_Turret implements Mechanism {
     private final ElapsedTime timer = new ElapsedTime();
     double runtime = timer.seconds();
 
+
     NextMotor turretLL = new NextMotor("3C");
     public LLResult llResult;
 
-    NextLimelight limelightRed = new NextLimelight("limelight");
+    NextLimelight limelight = new NextLimelight("limelight");
 
     double turretCurrentPos;
     public double tx = 0;
     public double ta = 0;
     public double ty = 0;
     double offset = 0;
-
 //    NextDigitalSensor magnet = new NextDigitalSensor("magnet");
 
     private boolean hasTarget = false;
-    private final RingoPIDController pid = new RingoPIDController(0.01, 0.0, 0.0);
+    private Alliance alliance;
+    private final RingoPIDController pid = new RingoPIDController(0.01, 0.0, 0.001);
 
-    private final HashMap<Integer, String> obeliskMap = new HashMap<>();
 
-    public LimeLight_Turret() { // RED
-//        obeliskMap.put(30, "30");
-//        obeliskMap.put(31, "31");
-//        obeliskMap.put(32, "32");
-//        obeliskMap.put(33, "33");
-//        obeliskMap.put(35, "34");
-//        obeliskMap.put(36, "35");
-//        obeliskMap.put(37, "36");
-
-        obeliskMap.put(33, "33");
-
+    public LimeLight_Turret(Alliance alliance) {
+        this.alliance = alliance;
     }
 
     public Command initialize() {
-        limelightRed.start();
-        return infinite(()-> limelightRed.startReading(0, 100));
+        limelight.start();
+        return infinite(()-> limelight.startReading(alliance.getPipeline(), 100));
     }
 
     public void RSTtimer(){
         timer.reset();
     }
+    public List<Integer> getDetectedTagIds(Limelight3A limelight) {
+        List<Integer> tagIds = new ArrayList<>();
+        LLResult result = limelight.getLatestResult();
 
+        if (result != null && result.isValid()) {
+            for (LLResultTypes.FiducialResult tag : result.getFiducialResults()) {
+                tagIds.add(tag.getFiducialId());
+            }
+        }
+
+        return tagIds;
+    }
 
     @Override
     public void periodic() {
@@ -76,14 +78,16 @@ public class LimeLight_Turret implements Mechanism {
         Telemetry.log("encoder: ", getAngle());
         Telemetry.log("runtime ", runtime);
         Telemetry.log("Target: ", pid.getTarget());
+        Telemetry.log("Current id detected: ", getDetectedTagIds(limelight.getCamera()));
+        Telemetry.log(" limelight status: ", limelight.getLatestResult() != null && limelight.getLatestResult().isValid());
 
 
 
         double PIDPower = pid.calculateOutput(getAngle(), runtime);
 
-        turretLL.setThrottle(PIDPower);
+        //turretLL.setThrottle(PIDPower);
 
-        LLResult resultLL = limelightRed.getLatestResult();
+        LLResult resultLL = limelight.getLatestResult();
 
         if (resultLL != null && resultLL.isValid()) {
             tx = resultLL.getTx();
