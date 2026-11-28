@@ -11,7 +11,7 @@ import dev.nextftc.robot.opmode.NextOpMode;
 import dev.nextftc.robot.opmode.NextTeleop;
 import dev.nextftc.robot.triggers.CommandGamepad;
 
-@NextTeleop(name = "A TeleopLL")
+@NextTeleop(name = "A TeleopLL blue")
 public class TeleopLLBlue extends NextOpMode {
 
     public boolean hasMatchStarted = false;
